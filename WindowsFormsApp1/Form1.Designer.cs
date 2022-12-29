@@ -32,13 +32,13 @@
             this.addButton = new System.Windows.Forms.Button();
             this.editButton = new System.Windows.Forms.Button();
             this.deleteButton = new System.Windows.Forms.Button();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.listViewTasks = new System.Windows.Forms.ListView();
             this.comboBoxSort = new System.Windows.Forms.ComboBox();
             this.sortLabel = new System.Windows.Forms.Label();
             this.textBoxFilter = new System.Windows.Forms.TextBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.searchIcon = new System.Windows.Forms.PictureBox();
             this.checkBoxUncompleted = new System.Windows.Forms.CheckBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.searchIcon)).BeginInit();
             this.SuspendLayout();
             // 
             // addButton
@@ -49,7 +49,7 @@
             this.addButton.TabIndex = 1;
             this.addButton.Text = "Add";
             this.addButton.UseVisualStyleBackColor = true;
-            this.addButton.Click += new System.EventHandler(this.addButton_Click);
+            this.addButton.Click += new System.EventHandler(this.AddButtonOnClick);
             // 
             // editButton
             // 
@@ -59,7 +59,7 @@
             this.editButton.TabIndex = 2;
             this.editButton.Text = "Edit";
             this.editButton.UseVisualStyleBackColor = true;
-            this.editButton.Click += new System.EventHandler(this.editButton_Click);
+            this.editButton.Click += new System.EventHandler(this.EditButtonOnClick);
             // 
             // deleteButton
             // 
@@ -69,24 +69,24 @@
             this.deleteButton.TabIndex = 3;
             this.deleteButton.Text = "Delete";
             this.deleteButton.UseVisualStyleBackColor = true;
-            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
+            this.deleteButton.Click += new System.EventHandler(this.DeleteButtonOnClick);
             // 
-            // listView1
+            // listViewTasks
             // 
-            this.listView1.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
-            this.listView1.Alignment = System.Windows.Forms.ListViewAlignment.Default;
-            this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.listView1.CheckBoxes = true;
-            this.listView1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.listView1.FullRowSelect = true;
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(7, 55);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(664, 326);
-            this.listView1.TabIndex = 5;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
-            this.listView1.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.listView1_ItemCheck);
+            this.listViewTasks.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
+            this.listViewTasks.Alignment = System.Windows.Forms.ListViewAlignment.Default;
+            this.listViewTasks.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.listViewTasks.CheckBoxes = true;
+            this.listViewTasks.Cursor = System.Windows.Forms.Cursors.Default;
+            this.listViewTasks.FullRowSelect = true;
+            this.listViewTasks.HideSelection = false;
+            this.listViewTasks.Location = new System.Drawing.Point(7, 55);
+            this.listViewTasks.Name = "listViewTasks";
+            this.listViewTasks.Size = new System.Drawing.Size(664, 326);
+            this.listViewTasks.TabIndex = 5;
+            this.listViewTasks.UseCompatibleStateImageBehavior = false;
+            this.listViewTasks.View = System.Windows.Forms.View.Details;
+            this.listViewTasks.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.ListViewTasksOnItemCheck);
             // 
             // comboBoxSort
             // 
@@ -100,7 +100,7 @@
             this.comboBoxSort.Name = "comboBoxSort";
             this.comboBoxSort.Size = new System.Drawing.Size(213, 21);
             this.comboBoxSort.TabIndex = 6;
-            this.comboBoxSort.SelectedIndexChanged += new System.EventHandler(this.comboBoxSort_SelectedIndexChanged);
+            this.comboBoxSort.SelectedIndexChanged += new System.EventHandler(this.ComboBoxSortOnSelectedIndexChange);
             // 
             // sortLabel
             // 
@@ -118,18 +118,18 @@
             this.textBoxFilter.Name = "textBoxFilter";
             this.textBoxFilter.Size = new System.Drawing.Size(173, 20);
             this.textBoxFilter.TabIndex = 8;
-            this.textBoxFilter.TextChanged += new System.EventHandler(this.textBoxFilter_TextChanged);
+            this.textBoxFilter.TextChanged += new System.EventHandler(this.TextBoxFilterOnTextChange);
             // 
-            // pictureBox1
+            // searchIcon
             // 
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.Window;
-            this.pictureBox1.Image = global::WindowsFormsApp1.Properties.Resources.search_icon;
-            this.pictureBox1.Location = new System.Drawing.Point(646, 13);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(25, 25);
-            this.pictureBox1.TabIndex = 11;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            this.searchIcon.BackColor = System.Drawing.SystemColors.Window;
+            this.searchIcon.Image = global::WindowsFormsApp1.Properties.Resources.search_icon;
+            this.searchIcon.Location = new System.Drawing.Point(646, 13);
+            this.searchIcon.Name = "searchIcon";
+            this.searchIcon.Size = new System.Drawing.Size(25, 25);
+            this.searchIcon.TabIndex = 11;
+            this.searchIcon.TabStop = false;
+            this.searchIcon.Click += new System.EventHandler(this.SearchIconOnClick);
             // 
             // checkBoxUncompleted
             // 
@@ -140,7 +140,7 @@
             this.checkBoxUncompleted.TabIndex = 12;
             this.checkBoxUncompleted.Text = "Show uncompleted only";
             this.checkBoxUncompleted.UseVisualStyleBackColor = true;
-            this.checkBoxUncompleted.CheckedChanged += new System.EventHandler(this.checkBoxUncompleted_CheckedChanged);
+            this.checkBoxUncompleted.CheckedChanged += new System.EventHandler(this.CheckBoxUncompletedOnCheckedChange);
             // 
             // Form1
             // 
@@ -149,12 +149,12 @@
             this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.ClientSize = new System.Drawing.Size(684, 461);
             this.Controls.Add(this.checkBoxUncompleted);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.searchIcon);
             this.Controls.Add(this.textBoxFilter);
             this.Controls.Add(this.sortLabel);
             this.Controls.Add(this.comboBoxSort);
             this.Controls.Add(this.deleteButton);
-            this.Controls.Add(this.listView1);
+            this.Controls.Add(this.listViewTasks);
             this.Controls.Add(this.addButton);
             this.Controls.Add(this.editButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -165,7 +165,7 @@
             this.Text = "Task Manager";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.searchIcon)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -176,11 +176,11 @@
         private System.Windows.Forms.Button addButton;
         private System.Windows.Forms.Button editButton;
         private System.Windows.Forms.Button deleteButton;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView listViewTasks;
         private System.Windows.Forms.ComboBox comboBoxSort;
         private System.Windows.Forms.Label sortLabel;
         private System.Windows.Forms.TextBox textBoxFilter;
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox searchIcon;
         private System.Windows.Forms.CheckBox checkBoxUncompleted;
     }
 }
