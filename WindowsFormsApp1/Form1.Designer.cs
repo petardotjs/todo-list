@@ -81,6 +81,7 @@
             this.listViewTasks.FullRowSelect = true;
             this.listViewTasks.HideSelection = false;
             this.listViewTasks.Location = new System.Drawing.Point(7, 55);
+            this.listViewTasks.MultiSelect = false;
             this.listViewTasks.Name = "listViewTasks";
             this.listViewTasks.Size = new System.Drawing.Size(664, 326);
             this.listViewTasks.TabIndex = 5;

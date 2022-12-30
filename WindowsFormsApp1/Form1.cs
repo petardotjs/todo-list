@@ -154,6 +154,31 @@ namespace WindowsFormsApp1
             taskForm.ShowDialog();
         }
 
+        public void UpdateListView(List<Task> tasks)
+        {
+            // Clear the tasks from the list view
+            listViewTasks.Items.Clear();
+
+            // Loop through the tasks in the filtered list
+            foreach (Task task in tasks)
+            {
+                // Add the task to the list view
+                ListViewItem item = new ListViewItem(task.Name);
+                item.SubItems.Add(task.Deadline.ToString("dd.MM.yyyy г."));
+                item.SubItems.Add(task.Priority.ToString());
+                if (task.IsCompleted)
+                {
+                    item.Tag = (task, "initialized");
+                }
+                else
+                {
+                    item.Tag = task;
+                }
+                item.Checked = task.IsCompleted;
+                listViewTasks.Items.Add(item);
+            }
+        }
+
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Create a list to store the tasks in CSV format
@@ -176,10 +201,6 @@ namespace WindowsFormsApp1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Set the list view's view mode to details and disable multiple selection
-            listViewTasks.View = View.Details;
-            listViewTasks.MultiSelect = false;
-
             // Add the columns to the list view
             listViewTasks.Columns.Add("Task Name", 250, HorizontalAlignment.Left);
             listViewTasks.Columns.Add("Deadline", 260, HorizontalAlignment.Center);
@@ -212,27 +233,7 @@ namespace WindowsFormsApp1
                     tasksToSave.Add(taskObject);
                 }
 
-                // Loop through the tasks in the list
-                foreach (Task task in tasksToSave)
-                {
-                    // Add the task to the list view
-                    ListViewItem item = new ListViewItem(task.Name);
-                    item.SubItems.Add(task.Deadline.ToString("dd.MM.yyyy г."));
-                    item.SubItems.Add(task.Priority.ToString());
-                    // Set the Checked property of the ListViewItem to the value of IsCompleted
-                    item.Checked = task.IsCompleted;
-                    if (item.Checked == false)
-                    {
-                        item.Tag = task;
-                    }
-                    else
-                    {
-                        item.Tag = (task, "initialize");
-                    }
-
-                    // Add the item to the ListView
-                    listViewTasks.Items.Add(item);
-                }
+                UpdateListView(tasksToSave);
 
                 comboBoxSort.SelectedIndex = 0;
             }
@@ -244,6 +245,11 @@ namespace WindowsFormsApp1
             Form taskForm = (Form)((Button)sender).Parent;
             string taskName = ((TextBox)taskForm.Controls[1]).Text;
             DateTime deadline = ((DateTimePicker)taskForm.Controls[3]).Value;
+            if (deadline < DateTime.Now)
+            {
+                MessageBox.Show("Please enter a valid deadline that is later than or equal to the current date and time.");
+                return;
+            }
             int priority = (int)((NumericUpDown)taskForm.Controls[5]).Value;
             bool isEdit = (string)taskForm.Tag == "Edit";
 
@@ -330,12 +336,6 @@ namespace WindowsFormsApp1
             ShowTaskFormModal(task.Name, task.Priority, task.Deadline);
         }
 
-        private void AddButtonOnClick(object sender, EventArgs e)
-        {
-            ShowTaskFormModal();
-        }
-
-
         private void DeleteButtonOnClick(object sender, EventArgs e)
         {
             // Check if an item is selected in the list view
@@ -362,60 +362,6 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void ComboBoxSortOnSelectedIndexChange(object sender, EventArgs e)
-        {
-            List<Task> tasks = ManageTasks(tasksToSave, comboBoxSort.SelectedIndex, textBoxFilter.Text, checkBoxUncompleted.Checked);
-
-            // Clear the tasks from the list view
-            listViewTasks.Items.Clear();
-
-            // Loop through the tasks in the filtered list
-            foreach (Task task in tasks)
-            {
-                // Add the task to the list view
-                ListViewItem item = new ListViewItem(task.Name);
-                item.SubItems.Add(task.Deadline.ToString("dd.MM.yyyy г."));
-                item.SubItems.Add(task.Priority.ToString());
-                if (task.IsCompleted)
-                {
-                    item.Tag = (task, "initialized");
-                }
-                else
-                {
-                    item.Tag = task;
-                }
-                item.Checked = task.IsCompleted; // Restore the checked state of the task
-                listViewTasks.Items.Add(item);
-            }
-        }
-
-        private void TextBoxFilterOnTextChange(object sender, EventArgs e)
-        {
-            List<Task> tasks = ManageTasks(tasksToSave, comboBoxSort.SelectedIndex, textBoxFilter.Text, checkBoxUncompleted.Checked);
-
-            // Clear the tasks from the list view
-            listViewTasks.Items.Clear();
-
-            // Loop through the tasks in the filtered list
-            foreach (Task task in tasks)
-            {
-                // Add the task to the list view
-                ListViewItem item = new ListViewItem(task.Name);
-                item.SubItems.Add(task.Deadline.ToString("dd.MM.yyyy г."));
-                item.SubItems.Add(task.Priority.ToString());
-                if (task.IsCompleted)
-                {
-                    item.Tag = (task, "initialized");
-                }
-                else
-                {
-                    item.Tag = task;
-                }
-                item.Checked = task.IsCompleted;
-                listViewTasks.Items.Add(item);
-            }
-        }
-
         private void ListViewTasksOnItemCheck(object sender, ItemCheckEventArgs e)
         {
             // Get the selected item
@@ -439,40 +385,35 @@ namespace WindowsFormsApp1
             }
         }
 
+        private void AddButtonOnClick(object sender, EventArgs e)
+        {
+            ShowTaskFormModal();
+        }
+
         private void SearchIconOnClick(object sender, EventArgs e)
         {
             textBoxFilter.Focus();
         }
 
+        private void ComboBoxSortOnSelectedIndexChange(object sender, EventArgs e)
+        {
+            List<Task> tasks = ManageTasks(tasksToSave, comboBoxSort.SelectedIndex, textBoxFilter.Text, checkBoxUncompleted.Checked);
+
+            UpdateListView(tasks);
+        }
+
+        private void TextBoxFilterOnTextChange(object sender, EventArgs e)
+        {
+            List<Task> tasks = ManageTasks(tasksToSave, comboBoxSort.SelectedIndex, textBoxFilter.Text, checkBoxUncompleted.Checked);
+
+            UpdateListView(tasks);
+        }
+
         private void CheckBoxUncompletedOnCheckedChange(object sender, EventArgs e)
         {
-            // Get the check box that was checked or unchecked
-            CheckBox checkBox = (CheckBox)sender;
+            List<Task> tasks = ManageTasks(tasksToSave, comboBoxSort.SelectedIndex, textBoxFilter.Text, checkBoxUncompleted.Checked);
 
-            List<Task> tasks = ManageTasks(tasksToSave, comboBoxSort.SelectedIndex, textBoxFilter.Text, checkBox.Checked);
-
-
-            // Clear the list view
-            listViewTasks.Items.Clear();
-
-            // Add the filtered tasks to the list view
-            foreach (Task task in tasks)
-            {
-                // Add the task to the list view
-                ListViewItem item = new ListViewItem(task.Name);
-                item.SubItems.Add(task.Deadline.ToString("dd.MM.yyyy г."));
-                item.SubItems.Add(task.Priority.ToString());
-                if (task.IsCompleted)
-                {
-                    item.Tag = (task, "initialized");
-                }
-                else
-                {
-                    item.Tag = task;
-                }
-                item.Checked = task.IsCompleted;
-                listViewTasks.Items.Add(item);
-            }
+            UpdateListView(tasks);
         }
     }
 }
