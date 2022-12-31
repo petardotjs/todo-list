@@ -8,7 +8,6 @@ namespace WindowsFormsApp1
 {
     public partial class Form1 : Form
     {
-        // Define a constant for the task file name
         private const string TASK_FILE_NAME = "tasks.csv";
 
         public Form1()
@@ -22,16 +21,13 @@ namespace WindowsFormsApp1
             public string Name { get; set; }
             public DateTime Deadline { get; set; }
             public int Priority { get; set; }
-            public Boolean IsCompleted { get; set; }
+            public bool IsCompleted { get; set; }
         }
 
-        // Define list for the tasks to being manipulated and saved to the CSV file in the end
         public List<Task> tasksToSave = new List<Task>();
 
-        // Utility function for sorting the tasks and returning a sorted list
         public List<Task> SortTasks(List<Task> tasks, int selectedIndex)
         {
-            //Sort the list based on the selected index and return the sorted list
             if (selectedIndex == 0)
             {
                 tasks.Sort((x, y) => string.Compare(x.Name, y.Name));
@@ -47,19 +43,16 @@ namespace WindowsFormsApp1
             return tasks;
         }
 
-        public List<Task> ManageTasks(List<Task> tasks, int selectedSortIndex, string textBoxValue, Boolean uncompletedOnly)
+        public List<Task> ManageTasks(List<Task> tasks, int selectedSortIndex, string textBoxValue, bool uncompletedOnly)
         {
             tasks = SortTasks(tasks, selectedSortIndex);
 
             List<Task> tasksToReturn = new List<Task>();
-            // Loop through all the items in the list view
             foreach (Task task in tasks)
             {
 
-                // Check if the name or priority of the task contains the text in the textBoxFilter
                 if (task.Name.Contains(textBoxValue) || task.Priority.ToString().Contains(textBoxValue))
                 {
-                    // If the name or priority of the task contains the text in the textBoxFilter, add the task to the list
                     tasksToReturn.Add(task);
                 }
             }
@@ -74,7 +67,6 @@ namespace WindowsFormsApp1
 
         public void ShowTaskFormModal(string name = "", int priority = 1, DateTime deadline = default)
         {
-            // Create a form for editing the task
             Form taskForm = new Form
             {
                 Text = deadline == default ? "Add Task" : "Edit Task",
@@ -82,7 +74,6 @@ namespace WindowsFormsApp1
                 Height = 200
             };
 
-            // Add a label and text box for the task name
             Label taskNameLabel = new Label
             {
                 Text = "Task name:",
@@ -100,7 +91,6 @@ namespace WindowsFormsApp1
             };
             taskForm.Controls.Add(taskNameTextBox);
 
-            // Add a label and date picker for the deadline
             Label deadlineLabel = new Label
             {
                 Text = "Deadline:",
@@ -118,7 +108,6 @@ namespace WindowsFormsApp1
             };
             taskForm.Controls.Add(deadlinePicker);
 
-            // Add a label and numeric up-down for the priority
             Label priorityLabel = new Label
             {
                 Text = "Priority:",
@@ -138,7 +127,6 @@ namespace WindowsFormsApp1
             };
             taskForm.Controls.Add(priorityUpDown);
 
-            // Add a submit button to the form
             Button submitButton = new Button
             {
                 Text = "Submit",
@@ -150,19 +138,15 @@ namespace WindowsFormsApp1
             taskForm.Tag = deadline == default ? "Add" : "Edit";
 
             taskForm.StartPosition = FormStartPosition.CenterScreen;
-            // Show the form for editing the task
             taskForm.ShowDialog();
         }
 
         public void UpdateListView(List<Task> tasks)
         {
-            // Clear the tasks from the list view
             listViewTasks.Items.Clear();
 
-            // Loop through the tasks in the filtered list
             foreach (Task task in tasks)
             {
-                // Add the task to the list view
                 ListViewItem item = new ListViewItem(task.Name);
                 item.SubItems.Add(task.Deadline.ToString("dd.MM.yyyy г."));
                 item.SubItems.Add(task.Priority.ToString());
@@ -181,48 +165,37 @@ namespace WindowsFormsApp1
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Create a list to store the tasks in CSV format
             List<string> tasks = new List<string>();
 
-            // Check if the list view has any items
             if (tasksToSave.Count > 0)
             {
-                // Loop through the tasks in the list view
                 for (int i = 0; i < tasksToSave.Count; i++)
                 {
-                    // Add the task to the list in CSV format
                     tasks.Add($"{tasksToSave[i].Name},{tasksToSave[i].Deadline:yyyy-MM-dd},{tasksToSave[i].Priority},{tasksToSave[i].IsCompleted}");
                 }
 
-                // Write the tasks to the file
                 File.WriteAllLines(TASK_FILE_NAME, tasks);
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Add the columns to the list view
             listViewTasks.Columns.Add("Task Name", 250, HorizontalAlignment.Left);
             listViewTasks.Columns.Add("Deadline", 260, HorizontalAlignment.Center);
             listViewTasks.Columns.Add("Priority", 150, HorizontalAlignment.Center);
 
 
-            // Check if the tasks file exists
             if (File.Exists(TASK_FILE_NAME))
             {
-                // Read the tasks from the file
                 string[] tasksFromFile = File.ReadAllLines(TASK_FILE_NAME);
 
-                // Loop through the tasks from the file
                 foreach (string task in tasksFromFile)
                 {
-                    // Split the task into its parts
                     string[] parts = task.Split(',');
                     string taskName = parts[0];
                     DateTime deadline = DateTime.Parse(parts[1]);
                     int priority = int.Parse(parts[2]);
                     Boolean isCompleted = Boolean.Parse(parts[3]);
-                    // Create a new task object
                     Task taskObject = new Task
                     {
                         Name = taskName,
@@ -241,7 +214,6 @@ namespace WindowsFormsApp1
 
         private void SubmitButtonOnClick(object sender, EventArgs e)
         {
-            // Get the updated task details from the form
             Form taskForm = (Form)((Button)sender).Parent;
             string taskName = ((TextBox)taskForm.Controls[1]).Text;
             DateTime deadline = ((DateTimePicker)taskForm.Controls[3]).Value;
@@ -253,7 +225,6 @@ namespace WindowsFormsApp1
             int priority = (int)((NumericUpDown)taskForm.Controls[5]).Value;
             bool isEdit = (string)taskForm.Tag == "Edit";
 
-            // Validate the input
             if (string.IsNullOrEmpty(taskName))
             {
                 MessageBox.Show("Please enter a task name.");
@@ -266,7 +237,6 @@ namespace WindowsFormsApp1
                 return;
             }
 
-            // Create a new task object
             Task task = new Task
             {
                 Name = taskName,
@@ -275,21 +245,19 @@ namespace WindowsFormsApp1
                 IsCompleted = false
             };
 
-            // Get the selected task (if editing)
             ListViewItem item = null;
             if (isEdit && listViewTasks.SelectedItems.Count > 0)
             {
                 item = listViewTasks.SelectedItems[0];
+                task.IsCompleted = item.Checked;
                 for (int i = 0; i < tasksToSave.Count; i++)
                 {
                     if (tasksToSave[i].Name == item.Text)
                     {
-                        task.IsCompleted = item.Checked;
                         tasksToSave[i] = task;
                     }
                 }
             }
-            // Update the task in the list view (or add a new one)
             if (item == null)
             {
                 item = new ListViewItem(task.Name);
@@ -308,48 +276,34 @@ namespace WindowsFormsApp1
                 item.Tag = task;
             }
 
-            // Close the form
             taskForm.Close();
         }
 
         private void EditButtonOnClick(object sender, EventArgs e)
         {
-            // Check if a task is selected
             if (listViewTasks.SelectedItems.Count == 0)
             {
                 MessageBox.Show("Please select a task to edit.");
                 return;
             }
 
-            // Get the selected task
             ListViewItem item = listViewTasks.SelectedItems[0];
             Task task = (Task)item.Tag;
-
-            // Check if the task object is null
-            if (task == null)
-            {
-                // Show an error message and return
-                MessageBox.Show("An error occurred while trying to edit the task. Please try again.");
-                return;
-            }
 
             ShowTaskFormModal(task.Name, task.Priority, task.Deadline);
         }
 
         private void DeleteButtonOnClick(object sender, EventArgs e)
         {
-            // Check if an item is selected in the list view
             if (listViewTasks.SelectedItems.Count == 0)
             {
                 MessageBox.Show("Please select a task to delete.");
                 return;
             }
 
-            // Confirm the deletion
             DialogResult result = MessageBox.Show("Are you sure you want to delete the selected task?", "Confirm Deletion", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes)
             {
-                // Remove the selected item from list view and tasksToSave
                 for (int i = 0; i < tasksToSave.Count; i++)
                 {
                     if (tasksToSave[i].Name == listViewTasks.SelectedItems[0].Text)
@@ -364,7 +318,6 @@ namespace WindowsFormsApp1
 
         private void ListViewTasksOnItemCheck(object sender, ItemCheckEventArgs e)
         {
-            // Get the selected item
             ListViewItem item = listViewTasks.Items[e.Index];
             Task task = null;
             for (int i = 0; i < tasksToSave.Count; i++)
